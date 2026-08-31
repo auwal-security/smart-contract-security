@@ -1,3 +1,47 @@
+# Midnight — M-01
+
+## Severity
+Medium
+
+## Category
+Accounting / State Transition / Economic Manipulation
+
+## Status
+Publicly disclosed
+
+## Summary
+
+A lender can use the protocol's multicall mechanism to withdraw
+before bad debt is realized in the same transaction, allowing the
+lender to avoid its proportional share of the loss while the
+remaining lenders absorb it.
+
+## Security Impact
+
+The issue breaks the protocol's intended proportional bad-debt
+socialization invariant.
+
+## Root Cause
+
+The protocol evaluates the lender's position against the current
+lossFactor during withdrawal, while liquidation updates lossFactor
+only afterward. multicall allows both operations to be executed
+atomically in attacker-controlled order.
+
+## Attack Flow
+
+withdraw()
+    ↓
+position updated using old lossFactor
+    ↓
+attacker receives withdrawable assets
+    ↓
+liquidate()
+    ↓
+lossFactor increases
+    ↓
+remaining lenders absorb the loss
+
 ## [01-M] Lender Can Atomically Escape Bad Debt Socialization Via multicall, Imposing Disproportionate Losses On Remaining Lenders
 
 
